@@ -120,6 +120,29 @@
         input:focus, select:focus { border-color: var(--pink-hot); box-shadow: 0 0 15px rgba(255, 105, 180, 0.15); }
         .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); }
         
+        /* Dropdown Autocompletado */
+        .suggestions-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%;
+            background: #ffe4ee; border: 2px solid var(--pink-hot); border-radius: 15px;
+            margin-top: 5px; list-style: none; padding: 0; max-height: 160px;
+            overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; 
+            z-index: 100; box-shadow: 0 10px 25px rgba(255, 105, 180, 0.25); display: none; 
+            animation: fadeIn 0.3s ease;
+        }
+        .suggestions-dropdown::-webkit-scrollbar { display: none; }
+        body.dark-mode .suggestions-dropdown { background: #3a1625; border-color: var(--pink-hot); box-shadow: 0 10px 25px rgba(255, 105, 180, 0.25); }
+        
+        .suggestions-dropdown li {
+            padding: 12px 15px; cursor: pointer; color: var(--pink-deep); font-size: 14px; font-weight: 700;
+            border-bottom: 1px dashed var(--pink-soft); text-align: left; transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .suggestions-dropdown li::before { content: '✨'; font-size: 12px; opacity: 0.8; }
+        body.dark-mode .suggestions-dropdown li { color: #ffb6c1; border-bottom-color: var(--pink-soft); }
+        .suggestions-dropdown li:hover { background: var(--pink-hot); color: white; padding-left: 20px; }
+        body.dark-mode .suggestions-dropdown li:hover { background: var(--pink-hot); color: white; padding-left: 20px; }
+        .suggestions-dropdown li:last-child { border-bottom: none; }
+
         .timer-big { font-size: 42px; font-weight: 800; margin: 10px 0; letter-spacing: -1px; }
         .btn-group { display: flex; gap: 12px; margin-bottom: 25px; }
 
@@ -144,59 +167,36 @@
         .toast { position: fixed; top: 25px; right: 100px; background: #4CAF50; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; z-index: 9999; }
         .toast-error { background: #E53935; }
 
+        /* Estilos Panel Admin General */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; padding: 20px; }
+        
+        /* RESTAURADO A 450PX PARA LOS MODALES PEQUEÑOS (Contraseña, Eliminar, etc) */
         .modal-content { background: var(--white); padding: 30px; border-radius: 20px; border: 3px solid var(--pink-soft); text-align: center; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transform: scale(0.7); animation: popIn 0.3s ease forwards; backdrop-filter: blur(15px); }
 
-        /* Estilos Tabs Admin */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px dashed var(--pink-soft); padding-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border: 2px solid var(--pink-soft); background: var(--pink-bg); color: var(--text-muted); font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 15px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px dashed var(--pink-soft); padding-bottom: 15px; flex-wrap: wrap;}
+        .tab-btn { flex: 1; padding: 10px 5px; border: 2px solid var(--pink-soft); background: var(--pink-bg); color: var(--text-muted); font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 15px; font-size: 13px; min-width: 100px;}
         .tab-btn.active { background: var(--pink-hot); color: white; border-color: var(--pink-hot); box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3); }
         .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
 
-        /* Estilos Leaderboard Guardias */
         .leaderboard-list { list-style: none; padding: 0; margin: 0 auto 20px auto; max-width: 350px; text-align: left; }
-        .leaderboard-item { 
-            background: var(--pink-bg); border: 1px solid var(--pink-soft); border-radius: 12px; 
-            padding: 12px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; 
-            align-items: center; font-size: 14px; font-weight: 600; color: var(--text-dark); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-        }
+        .leaderboard-item { background: var(--pink-bg); border: 1px solid var(--pink-soft); border-radius: 12px; padding: 12px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; color: var(--text-dark); transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .leaderboard-item:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 8px 15px rgba(255, 105, 180, 0.2); }
-        
         .rank-1 { border-color: var(--gold); background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
         .rank-1::before { content: '🥇'; margin-right: 8px; font-size: 18px; }
         .rank-2::before { content: '🥈'; margin-right: 8px; font-size: 18px; }
         .rank-3::before { content: '🥉'; margin-right: 8px; font-size: 18px; }
 
-        /* Estilos Tabla Meseros */
         .table-responsive { overflow-x: auto; background: var(--pink-bg); border: 1px solid var(--pink-soft); border-radius: 10px; padding: 10px; }
         .table-meseros { width: 100%; border-collapse: collapse; text-align: left; min-width: 700px; }
         .table-meseros th { border-bottom: 2px solid var(--pink-soft); color: var(--pink-hot); padding-bottom: 8px; text-align: center; font-size: 13px;}
         .table-meseros td { padding: 6px 4px; border-bottom: 1px solid var(--pink-soft); border-right: 1px dashed var(--pink-soft); text-align: center; vertical-align: middle; font-size: 12px;}
         .table-meseros td:last-child { border-right: none; }
-        
-        .table-meseros th.nombre-col, .table-meseros td.nombre-col { 
-            text-align: left; font-weight: bold; color: var(--text-dark); 
-            width: 100%; 
-            word-wrap: break-word; line-height: 1.2; padding-left: 5px; 
-        }
-        
+        .table-meseros th.nombre-col, .table-meseros td.nombre-col { text-align: left; font-weight: bold; color: var(--text-dark); width: 100%; word-wrap: break-word; line-height: 1.2; padding-left: 5px; }
         .col-dia { width: 1%; min-width: 70px; white-space: nowrap; }
-
-        .table-meseros th.col-fit, .table-meseros td.col-fit {
-            width: 1%; white-space: nowrap; padding-left: 15px; padding-right: 15px; 
-        }
+        .table-meseros th.col-fit, .table-meseros td.col-fit { width: 1%; white-space: nowrap; padding-left: 15px; padding-right: 15px; }
         
-        /* BLOQUE DE TURNOS - MODIFICADO PARA SALTO DE LÍNEA */
-        .shift-block { 
-            display: block; /* Cambio de inline-block a block para forzar el salto de línea */
-            background: var(--white); border: 1px solid var(--pink-soft); 
-            border-radius: 4px; padding: 3px 6px; margin: 2px auto 4px auto; font-size: 11px; 
-            font-weight: 600; color: var(--text-dark); white-space: nowrap; 
-            text-align: center;
-        }
-        
+        .shift-block { display: block; background: var(--white); border: 1px solid var(--pink-soft); border-radius: 4px; padding: 3px 6px; margin: 2px auto 4px auto; font-size: 11px; font-weight: 600; color: var(--text-dark); white-space: nowrap; text-align: center;}
         .badge-ok { background: #4CAF50; color: white; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
         .badge-fail { background: #E53935; color: white; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
 
@@ -209,16 +209,60 @@
         .btn-close-modal:hover { background: #e03c96; }
         .btn-secondary-modal { background: var(--pink-bg); color: var(--text-dark); padding: 10px 20px; border-radius: 10px; border: 2px solid var(--pink-soft); font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-secondary-modal:hover { background: var(--pink-soft); }
-        
         .btn-danger { background: var(--white); color: #E53935; border: 2px solid #E53935; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-danger:hover { background: #ffebee; }
-        
         .btn-danger-modal { background: #E53935; color: white; padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-danger-modal:hover { background: #c62828; }
 
         ::-webkit-scrollbar { width: 6px; height: 8px;}
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--pink-soft); border-radius: 10px; }
+
+        /* Estilos Diseño Compacto Admin Personal (CON PARCHE PARA CLIPPING) */
+        .staff-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 10px;
+            max-height: 250px; 
+            overflow-y: auto; 
+            /* Se aumenta el padding para que la animación no toque los bordes del recuadro (evita el recorte visual) */
+            padding: 15px; 
+            margin-top: 5px;
+            scroll-behavior: smooth;
+        }
+        .staff-card-mini {
+            background: var(--white); border: 2px solid var(--pink-soft); border-radius: 10px;
+            padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 700; color: var(--text-dark); transition: 0.2s;
+            position: relative;
+        }
+        .staff-card-mini:hover { border-color: var(--pink-hot); transform: translateY(-2px); }
+        
+        .btn-delete-mini { background: #ffebee; color: #E53935; border: 1px solid #E53935; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .btn-delete-mini:hover { background: #E53935; color: white; }
+        
+        /* Controles Administrador Reducidos */
+        .admin-control-input {
+            padding: 8px 10px !important;
+            font-size: 12px !important;
+            border-radius: 8px !important;
+        }
+        .admin-search-input {
+            padding-left: 32px !important;
+        }
+        .admin-control-icon {
+            font-size: 14px !important;
+            left: 10px !important;
+        }
+
+        /* ANIMACIÓN DESTACAR NUEVO TRABAJADOR (Ajustada para que no rompa el contenedor) */
+        @keyframes highlightNew {
+            0% { transform: scale(0.9); opacity: 0; background: var(--pink-hot); color: white; border-color: var(--pink-hot); }
+            40% { transform: scale(1.02); opacity: 1; background: var(--pink-hot); color: white; box-shadow: 0 0 10px rgba(255, 105, 180, 0.4); border-color: var(--pink-hot); }
+            70% { transform: scale(1); background: var(--pink-hot); color: white; }
+            100% { transform: scale(1); background: var(--white); color: var(--text-dark); box-shadow: 0 0 0 transparent; border-color: var(--pink-soft); }
+        }
+        .highlight-new-staff { animation: highlightNew 2.5s ease-out forwards; z-index: 10; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popIn { to { transform: scale(1); } }
@@ -231,7 +275,7 @@
     <button id="theme-toggle" class="theme-toggle" title="Cambiar Tema">🌙</button>
     <button id="admin-toggle" class="admin-toggle" title="Panel de Dueños">👑</button>
 
-    <div id="toast" class="toast">✅ ¡Reporte enviado con éxito!</div>
+    <div id="toast" class="toast">✅ ¡Acción realizada con éxito!</div>
     <div id="toast-error" class="toast toast-error">❌ Contraseña incorrecta</div>
 
     <div id="uwu-password-modal" class="modal-overlay">
@@ -241,13 +285,13 @@
                 <h3>Acceso Administrativo</h3>
             </div>
             <div class="modal-body">
-                <p>Ingresa la contraseña maestra para ver el registro de personal.</p>
+                <p style="font-size: 14px; margin-bottom: 20px;">Ingresa la contraseña maestra.</p>
                 <div class="input-box" style="margin-bottom: 30px;">
                     <span class="input-icon">🔑</span>
                     <input type="password" id="admin-pass-input" placeholder="Contraseña..." autocomplete="off">
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; gap: 10px;">
                 <button class="btn-secondary-modal" onclick="closeAdminPassModal()">Cancelar</button>
                 <button class="btn-close-modal" onclick="verifyAdminPass()">Ingresar</button>
             </div>
@@ -266,18 +310,16 @@
                 <div class="tabs">
                     <button class="tab-btn active" onclick="switchTab('guardias')">🛡️ Guardias</button>
                     <button class="tab-btn" onclick="switchTab('meseros')">🍽️ Meseros</button>
+                    <button class="tab-btn" onclick="switchTab('gestion')">🛠️ Personal</button>
                 </div>
 
                 <div id="panel-guardias" class="tab-content active">
-                    
                     <div style="text-align: center; margin-bottom: 20px;">
                         <div style="font-size: 45px; animation: pulseTrophy 1.5s infinite; display: inline-block;">🏆</div>
                         <h3 style="color: var(--pink-deep); margin: 5px 0 2px 0; font-size: 20px;">Ranking Oficial</h3>
                         <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Top 3 Guardias de la Semana</p>
                     </div>
-
-                    <ul class="leaderboard-list" id="leaderboard-guardias"></ul>
-
+                    <ul class="leaderboard-list" id="leaderboard-guardias" style="list-style: none; padding: 0;"></ul>
                     <h4 style="color: var(--pink-deep); margin-top: 25px; margin-bottom: 10px; font-size: 15px; border-top: 1px dashed var(--pink-soft); padding-top: 15px;">💰 Nómina a Pagar (Guardias)</h4>
                     <div style="max-height: 160px; overflow-y: auto; background: var(--pink-bg); border: 1px solid var(--pink-soft); border-radius: 10px; padding: 10px;">
                         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
@@ -291,7 +333,6 @@
                             <tbody id="nomina-guardias"></tbody>
                         </table>
                     </div>
-                    
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 25px;">
                         <button class="btn-close-modal" style="min-width: 260px;" onclick="closeLeaderboardModal()">Cerrar Panel</button>
                         <button class="btn-danger" style="min-width: 260px;" onclick="showResetModal('guardias')">🗑️ Reiniciar Datos Guardias</button>
@@ -300,34 +341,71 @@
 
                 <div id="panel-meseros" class="tab-content">
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Registro Semanal (Meta: 5 Horas)</p>
-                    
                     <div class="table-responsive">
-                        <table class="table-meseros">
+                        <table class="table-meseros" style="width: 100%; border-collapse: collapse; text-align: left;">
                             <thead>
-                                <tr>
-                                    <th class="nombre-col">Nombre</th>
-                                    <th class="col-dia">L</th>
-                                    <th class="col-dia">M</th>
-                                    <th class="col-dia">X</th>
-                                    <th class="col-dia">J</th>
-                                    <th class="col-dia">V</th>
-                                    <th class="col-dia">S</th>
-                                    <th class="col-dia">D</th>
-                                    <th class="col-fit">Total Horas</th>
-                                    <th class="col-fit">Meta</th>
+                                <tr style="color: var(--pink-hot); border-bottom: 2px solid var(--pink-soft);">
+                                    <th style="padding: 8px;">Nombre</th><th>L</th><th>M</th><th>X</th><th>J</th><th>V</th><th>S</th><th>D</th><th style="text-align: right;">Total</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabla-meseros">
-                                </tbody>
+                            <tbody id="tabla-meseros"></tbody>
                         </table>
                     </div>
-                    
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 25px;">
                         <button class="btn-close-modal" style="min-width: 260px;" onclick="closeLeaderboardModal()">Cerrar Panel</button>
                         <button class="btn-danger" style="min-width: 260px;" onclick="showResetModal('meseros')">🗑️ Reiniciar Datos Meseros</button>
                     </div>
                 </div>
 
+                <div id="panel-gestion" class="tab-content">
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; border-bottom: 1px dashed var(--pink-soft); padding-bottom: 15px;">
+                        
+                        <div style="flex: 1; min-width: 180px; background: var(--pink-bg); padding: 10px; border-radius: 12px; border: 1px solid var(--pink-soft); display: flex; flex-direction: column; justify-content: center;">
+                            <h4 style="color: var(--pink-deep); margin-bottom: 5px; font-size: 12px;">Añadir Trabajador</h4>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="text" id="new-staff-name" class="admin-control-input" placeholder="Nombre..." autocomplete="off" style="margin-bottom: 0; flex: 1;">
+                                <button onclick="addStaff()" style="background: var(--pink-hot); color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s;">➕</button>
+                            </div>
+                        </div>
+
+                        <div style="flex: 1; min-width: 180px; background: var(--pink-bg); padding: 10px; border-radius: 12px; border: 1px solid var(--pink-soft); display: flex; flex-direction: column; justify-content: center;">
+                            <h4 style="color: var(--pink-deep); margin-bottom: 5px; font-size: 12px;">Buscar en lista</h4>
+                            <div class="input-box" style="margin-bottom: 0;">
+                                <span class="input-icon admin-control-icon">🔍</span>
+                                <input type="text" id="admin-search-staff" class="admin-control-input admin-search-input" placeholder="Buscar..." oninput="renderStaffAdmin()" style="background: var(--white); margin-bottom: 0;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <h4 style="color: var(--pink-deep); margin-bottom: 5px; font-size: 14px;">Personal Activo (<span id="staff-count">0</span>)</h4>
+                    
+                    <div class="staff-grid" id="staff-list-admin">
+                        </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 25px;">
+                        <button class="btn-close-modal" style="min-width: 260px;" onclick="closeLeaderboardModal()">Cerrar Panel</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="uwu-delete-staff-modal" class="modal-overlay" style="z-index: 1005;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="cat-paw-icon" style="font-size: 45px; animation: none;">😿</div> 
+                <h3 style="color: #E53935;">¿Despedir trabajador?</h3>
+            </div>
+            <div class="modal-body">
+                <p style="margin: 15px 0;">¿Estás segura de eliminar a <b id="staff-to-delete-name" style="color:var(--pink-deep);"></b> del sistema? Ya no podrá registrar más horas.</p>
+                <input type="hidden" id="delete-staff-target" value="">
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-secondary-modal" onclick="closeDeleteStaffModal()">No, cancelar</button>
+                <button class="btn-in" style="background: #E53935;" onclick="confirmDeleteStaff()">Sí, eliminar</button>
             </div>
         </div>
     </div>
@@ -342,16 +420,16 @@
                 <p>¿Estás 100% seguro de borrar la información seleccionada? <b>Esta acción no se puede deshacer.</b> 🙀</p>
                 <input type="hidden" id="reset-target" value="">
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
                 <button class="btn-secondary-modal" onclick="closeResetModal()">No, cancelar</button>
-                <button class="btn-danger-modal" onclick="confirmReset()">Sí, borrar todo</button>
+                <button class="btn-in" style="background: #E53935;" onclick="confirmReset()">Sí, borrar todo</button>
             </div>
         </div>
     </div>
 
     <div id="uwu-alert-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header"><div class="cat-paw-icon">🐾</div><h3>¡Miau! Un momento...</h3></div>
+            <div class="modal-header"><div class="cat-paw-icon" style="font-size: 40px;">🐾</div><h3>¡Miau! Un momento...</h3></div>
             <div class="modal-body"><p id="alert-text">Por favor, ingresa los datos antes de iniciar. 😸</p></div>
             <div class="modal-footer"><button class="btn-close-modal" onclick="closeUwuAlert()">Entendido, miau~</button></div>
         </div>
@@ -361,7 +439,7 @@
         <div class="modal-content">
             <div class="modal-header"><div class="cat-paw-icon" style="font-size: 45px;">🙀</div><h3>¿Cerrar turno?</h3></div>
             <div class="modal-body"><p>Si confirmas, se detendrá el contador y deberás enviar tu reporte. ¿Estás seguro? 🐾</p></div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
                 <button class="btn-secondary-modal" onclick="closeUwuConfirm()">No, cancelar</button>
                 <button class="btn-close-modal" onclick="confirmStopShift()">Sí, cerrar turno</button>
             </div>
@@ -378,7 +456,12 @@
             </div>
         </div>
 
-        <div class="input-box"><span class="input-icon">👤</span><input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off"></div>
+        <div class="input-box">
+            <span class="input-icon">👤</span>
+            <input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off">
+            <ul id="suggestions-list" class="suggestions-dropdown"></ul>
+        </div>
+        
         <div class="input-box"><span class="input-icon">🏷️</span>
             <select id="user-role">
                 <option value="" disabled selected>Selecciona tu puesto...</option>
@@ -402,7 +485,7 @@
     </div>
 
     <script>
-        // --- BLOQUEO DE CLIC DERECHO Y TECLAS DE DESARROLLADOR ---
+        // --- PROTECCIONES BÁSICAS ---
         document.addEventListener('contextmenu', evento => evento.preventDefault());
         document.addEventListener('keydown', evento => {
             if (evento.key === 'F12' || (evento.ctrlKey && evento.shiftKey && (evento.key === 'I' || evento.key === 'J' || evento.key === 'C')) || (evento.ctrlKey && evento.key === 'U')) {
@@ -410,7 +493,7 @@
             }
         });
 
-        // --- LOGICA MODO OSCURO ---
+        // --- MODO OSCURO ---
         const themeToggleBtn = document.getElementById('theme-toggle');
         if (localStorage.getItem('uwu_theme') === 'dark') {
             document.body.classList.add('dark-mode'); themeToggleBtn.textContent = '☀️';
@@ -424,9 +507,6 @@
             }
         });
 
-        // =========================================================
-        // LINK DE GOOGLE SHEETS
-        // =========================================================
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXBxhjDo1HLNHZ9Xbqipeb5T-JUMl3PqthjsNWs1RON-4_g7pleNXCarhS1H-O_bA/exec"; 
 
         const timerTxt = document.getElementById('digital-timer');
@@ -438,9 +518,73 @@
         const logContent = document.getElementById('log-content');
         const statusMsg = document.getElementById('status-msg');
         
-        let startTime = null; let timerRunning = false; let interval = null;
+        let startTime = null; let interval = null;
 
-        // --- SISTEMA ADMIN ---
+        // --- INICIALIZACIÓN DE LA BASE DE DATOS LOCAL DE PERSONAL ---
+        const defaultNames = [
+            "Mario Antonio", "Maldi Tosnigga", "Diego Zambra", "Vod Kode", 
+            "Nano Azar", "Tony Angellini", "Vains Contreras", "Mateo Contreras", 
+            "Nataniel DoSantos", "Nestor", "Willy Falcone"
+        ]; 
+        
+        let validNames = JSON.parse(localStorage.getItem('uwu_personnel'));
+        if (!validNames) {
+            validNames = defaultNames;
+            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+        }
+        
+        const suggestionsList = document.getElementById('suggestions-list');
+
+        // --- Autocompletado Dinámico (Panel Principal) ---
+        nameInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            suggestionsList.innerHTML = ''; 
+            
+            if (val.length >= 3) {
+                const matches = validNames.filter(name => name.toLowerCase().includes(val));
+                if (matches.length > 0) {
+                    suggestionsList.style.display = 'block';
+                    matches.forEach(match => {
+                        const li = document.createElement('li');
+                        li.textContent = `✨ ${match}`;
+                        li.onclick = function() {
+                            nameInput.value = match;
+                            nameInput.disabled = true; 
+                            suggestionsList.style.display = 'none';
+                        };
+                        suggestionsList.appendChild(li);
+                    });
+                } else {
+                    suggestionsList.style.display = 'none';
+                }
+            } else {
+                suggestionsList.style.display = 'none';
+            }
+        });
+
+        // --- VALIDACIÓN DE SEGURIDAD (BLUR) ---
+        nameInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                if (this.value.trim() !== '' && !this.disabled) {
+                    const val = this.value.trim().toLowerCase();
+                    const isValidMatch = validNames.some(name => name.toLowerCase() === val);
+                    
+                    if (!isValidMatch) {
+                        showUwuAlert("Nombre no registrado 🙀");
+                        this.value = ''; 
+                        suggestionsList.style.display = 'none';
+                    }
+                }
+            }, 200); 
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== nameInput && e.target !== suggestionsList) {
+                suggestionsList.style.display = 'none';
+            }
+        });
+
+        // --- PANELES Y MODALES ADMIN ---
         const btnAdmin = document.getElementById('admin-toggle');
         const passModal = document.getElementById('uwu-password-modal');
         const leaderModal = document.getElementById('uwu-leaderboard-modal');
@@ -451,12 +595,15 @@
         function closeAdminPassModal() { passModal.style.display = 'none'; }
         function closeLeaderboardModal() { leaderModal.style.display = 'none'; }
         
-        function showResetModal(target) { 
-            document.getElementById('reset-target').value = target;
-            resetModal.style.display = 'flex'; 
-        }
+        function showResetModal(target) { document.getElementById('reset-target').value = target; resetModal.style.display = 'flex'; }
         function closeResetModal() { resetModal.style.display = 'none'; }
-        function showToast(id) { const t = document.getElementById(id); t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+        
+        function showToast(id, msg = null) { 
+            const t = document.getElementById(id); 
+            if(msg) t.innerHTML = msg;
+            t.style.display = 'block'; 
+            setTimeout(() => t.style.display = 'none', 3000); 
+        }
 
         function verifyAdminPass() {
             let claveIngresada = passInput.value;
@@ -464,26 +611,108 @@
                 closeAdminPassModal(); 
                 renderGuardias(); 
                 renderMeseros();
+                renderStaffAdmin(); 
                 leaderModal.style.display = 'flex';
             } else {
-                showToast('toast-error'); passInput.value = ''; passInput.focus();
+                showToast('toast-error', '❌ Contraseña incorrecta'); passInput.value = ''; passInput.focus();
             }
         }
         passInput.addEventListener("keypress", function(event) { if (event.key === "Enter") { event.preventDefault(); verifyAdminPass(); }});
 
-        // --- SISTEMA DE TABS ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
             if(tabId === 'guardias') {
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 document.getElementById('panel-guardias').classList.add('active');
-            } else {
+            } else if(tabId === 'meseros') {
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('panel-meseros').classList.add('active');
+            } else if(tabId === 'gestion') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('panel-gestion').classList.add('active');
             }
         }
+
+        // ==========================================
+        // FUNCIONES DE GESTIÓN DE PERSONAL (CON ANIMACIÓN)
+        // ==========================================
+        function renderStaffAdmin(highlightName = null) {
+            const list = document.getElementById('staff-list-admin');
+            const counter = document.getElementById('staff-count');
+            const searchQuery = document.getElementById('admin-search-staff').value.toLowerCase();
+            list.innerHTML = '';
+            
+            let sortedNames = [...validNames].sort((a, b) => a.localeCompare(b));
+            let filteredNames = sortedNames.filter(name => name.toLowerCase().includes(searchQuery));
+            counter.textContent = validNames.length;
+
+            if(filteredNames.length === 0) {
+                list.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:15px; color:var(--text-muted); font-size:13px;">No hay personal registrado o no coincide la búsqueda.</p>';
+                return;
+            }
+
+            filteredNames.forEach(name => {
+                let div = document.createElement('div');
+                div.className = 'staff-card-mini';
+                
+                if (name === highlightName) {
+                    div.classList.add('highlight-new-staff');
+                }
+
+                div.innerHTML = `
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 5px;" title="${name}">${name}</span> 
+                    <button class="btn-delete-mini" onclick="requestDeleteStaff('${name}')" title="Despedir">Borrar</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function addStaff() {
+            const input = document.getElementById('new-staff-name');
+            let rawName = input.value.trim();
+            if(!rawName) { showToast('toast-error', '❌ Escribe un nombre'); return; }
+            
+            let formattedName = rawName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+
+            if(validNames.some(n => n.toLowerCase() === formattedName.toLowerCase())) {
+                showToast('toast-error', '❌ Ese trabajador ya existe'); return;
+            }
+
+            validNames.push(formattedName);
+            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+            input.value = '';
+            
+            document.getElementById('admin-search-staff').value = '';
+            
+            renderStaffAdmin(formattedName);
+            showToast('toast', '✅ ¡Trabajador añadido!');
+
+            setTimeout(() => {
+                const newElement = document.querySelector('.highlight-new-staff');
+                if (newElement) {
+                    newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+
+        const deleteStaffModal = document.getElementById('uwu-delete-staff-modal');
+        function requestDeleteStaff(name) {
+            document.getElementById('staff-to-delete-name').textContent = name;
+            document.getElementById('delete-staff-target').value = name;
+            deleteStaffModal.style.display = 'flex';
+        }
+        function closeDeleteStaffModal() { deleteStaffModal.style.display = 'none'; }
+        
+        function confirmDeleteStaff() {
+            const nameToDelete = document.getElementById('delete-staff-target').value;
+            validNames = validNames.filter(n => n !== nameToDelete);
+            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+            renderStaffAdmin();
+            closeDeleteStaffModal();
+            showToast('toast', '✅ ¡Personal eliminado!');
+        }
+        // ==========================================
 
         function formatMsToTime(ms) {
             let totalS = Math.floor(ms / 1000);
@@ -491,93 +720,65 @@
             return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
 
-        // --- RENDER GUARDIAS ---
         function renderGuardias() {
             const listGuardias = document.getElementById('leaderboard-guardias');
             const tbodyNomina = document.getElementById('nomina-guardias');
             listGuardias.innerHTML = ''; tbodyNomina.innerHTML = '';
-            
             let leaderboard = JSON.parse(localStorage.getItem('uwu_leaderboard')) || {};
             let arr = Object.keys(leaderboard).map(name => ({ nombre: name, ms: leaderboard[name].ms !== undefined ? leaderboard[name].ms : leaderboard[name], role: leaderboard[name].role || "Mesero" }));
             let guardiasArr = arr.filter(e => e.role === "Guardia").sort((a, b) => b.ms - a.ms);
             let top3Guardias = guardiasArr.slice(0, 3); 
-
             if(guardiasArr.length === 0) {
                 listGuardias.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px; margin: 10px 0;">No hay guardias registrados 🐾</p>';
                 tbodyNomina.innerHTML = '<tr><td colspan="3" style="text-align:center; padding-top: 10px; color:var(--text-muted);">Sin registros</td></tr>';
                 return;
             }
-
             top3Guardias.forEach((emp, index) => {
                 let li = document.createElement('li'); li.className = 'leaderboard-item';
                 if(index === 0) li.classList.add('rank-1'); if(index === 1) li.classList.add('rank-2'); if(index === 2) li.classList.add('rank-3');
                 li.innerHTML = `<span><strong style="margin-right: 5px;">${index+1}.</strong> ${emp.nombre}</span> <span style="color:var(--pink-hot);">${formatMsToTime(emp.ms)} hrs</span>`;
                 listGuardias.appendChild(li);
             });
-
             guardiasArr.forEach(emp => {
                 let sueldo = "$" + Math.floor((emp.ms / 3600000) * 2500000).toLocaleString('es-CL');
                 let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="padding: 8px 0; color: var(--text-dark); border-bottom: 1px solid var(--pink-soft); font-weight: 600;">${emp.nombre}</td>
-                    <td style="padding: 8px 0; color: var(--text-dark); border-bottom: 1px solid var(--pink-soft);">${formatMsToTime(emp.ms)}</td>
-                    <td style="padding: 8px 0; text-align: right; color: #4CAF50; font-weight: 800; border-bottom: 1px solid var(--pink-soft);">${sueldo}</td>
-                `;
+                tr.innerHTML = `<td style="padding: 8px 0; color: var(--text-dark); border-bottom: 1px solid var(--pink-soft); font-weight: 600;">${emp.nombre}</td><td style="padding: 8px 0; color: var(--text-dark); border-bottom: 1px solid var(--pink-soft);">${formatMsToTime(emp.ms)}</td><td style="padding: 8px 0; text-align: right; color: #4CAF50; font-weight: 800; border-bottom: 1px solid var(--pink-soft);">${sueldo}</td>`;
                 tbodyNomina.appendChild(tr);
             });
         }
 
-        // --- RENDER MESEROS ---
         function renderMeseros() {
             const tbody = document.getElementById('tabla-meseros');
             tbody.innerHTML = '';
             let logMeseros = JSON.parse(localStorage.getItem('uwu_meseros')) || {};
             let dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D']; 
-
             if(Object.keys(logMeseros).length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding-top: 20px; color:var(--text-muted);">No hay meseros registrados esta semana 🐾</td></tr>';
                 return;
             }
-
             for (let name in logMeseros) {
                 let emp = logMeseros[name];
-                let totalMs = 0;
-                let celdasDias = '';
-
+                let totalMs = 0; let celdasDias = '';
                 dias.forEach(d => {
                     let shifts = emp[d] || [];
                     let shiftHtml = '';
-                    shifts.forEach(s => {
-                        totalMs += s.ms;
-                        shiftHtml += `<div class="shift-block" title="Tiempo: ${s.totalTxt}">${s.inicio} - ${s.fin}</div>`;
-                    });
+                    shifts.forEach(s => { totalMs += s.ms; shiftHtml += `<div class="shift-block" title="Tiempo: ${s.totalTxt}">${s.inicio} - ${s.fin}</div>`; });
                     celdasDias += `<td class="col-dia">${shiftHtml || '-'}</td>`;
                 });
-
                 let metaCumplida = totalMs >= 18000000;
                 let badgeHtml = metaCumplida ? `<span class="badge-ok">Sí</span>` : `<span class="badge-fail">No</span>`;
-
                 let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="nombre-col">${name}</td>
-                    ${celdasDias}
-                    <td class="col-fit" style="color: var(--pink-deep); font-weight: bold;">${formatMsToTime(totalMs)}</td>
-                    <td class="col-fit">${badgeHtml}</td>
-                `;
+                tr.innerHTML = `<td class="nombre-col">${name}</td>${celdasDias}<td class="col-fit" style="color: var(--pink-deep); font-weight: bold;">${formatMsToTime(totalMs)}</td><td class="col-fit">${badgeHtml}</td>`;
                 tbody.appendChild(tr);
             }
         }
 
         function confirmReset() {
             let target = document.getElementById('reset-target').value;
-            if(target === 'guardias') {
-                localStorage.removeItem('uwu_leaderboard');
-                renderGuardias();
-            } else if (target === 'meseros') {
-                localStorage.removeItem('uwu_meseros');
-                renderMeseros();
-            }
+            if(target === 'guardias') { localStorage.removeItem('uwu_leaderboard'); renderGuardias(); }
+            else if (target === 'meseros') { localStorage.removeItem('uwu_meseros'); renderMeseros(); }
             closeResetModal();
+            showToast('toast', '✅ ¡Datos borrados!');
         }
 
         const uwuModal = document.getElementById('uwu-alert-modal');
@@ -587,7 +788,9 @@
         function showUwuConfirm() { uwuConfirmModal.style.display = 'flex'; }
         function closeUwuConfirm() { uwuConfirmModal.style.display = 'none'; }
 
-        // Reloj Analógico
+        // ==========================================
+        // RELOJ ANALÓGICO
+        // ==========================================
         const clock = document.getElementById('analog-clock');
         const hHour = document.getElementById('h-hour'); const hMin = document.getElementById('h-min'); const hSec = document.getElementById('h-sec');
         for(let i=1; i<=12; i++) {
@@ -606,26 +809,30 @@
                 const session = JSON.parse(savedSession);
                 nameInput.value = session.name; roleInput.value = session.role;
                 nameInput.disabled = true; roleInput.disabled = true;
-                startTime = new Date(session.start); timerRunning = true;
+                startTime = new Date(session.start); startTimer();
                 btnStart.disabled = true; btnStop.disabled = false;
-                statusMsg.textContent = "Sesión recuperada. ¡Sigues trabajando! 🐈"; startTimer();
+                statusMsg.textContent = "Sesión recuperada. ¡Sigues trabajando! 🐈"; 
             }
             const pendingLog = localStorage.getItem('uwu_pending');
             if(pendingLog) showLog(JSON.parse(pendingLog));
         }
 
-        function startTimer() {
-            interval = setInterval(() => { timerTxt.textContent = formatMsToTime(new Date() - startTime); }, 1000);
-        }
+        function startTimer() { interval = setInterval(() => { timerTxt.textContent = formatMsToTime(new Date() - startTime); }, 1000); }
 
+        // ==========================================
+        // LÓGICA DE TURNOS Y ENVÍO
+        // ==========================================
         btnStart.onclick = () => {
             let rawName = nameInput.value.trim();
             if(!rawName) return showUwuAlert("Ingresa tu nombre por favor. 😸");
-            const n = rawName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            nameInput.value = n; 
+
+            const isValidName = validNames.some(name => name.toLowerCase() === rawName.toLowerCase());
+            if (!isValidName) return showUwuAlert("Nombre no registrado 🙀");
+
             const r = roleInput.value;
             if(!r) return showUwuAlert("Selecciona tu puesto de trabajo. 🐾");
-            startTime = new Date(); localStorage.setItem('uwu_session', JSON.stringify({ name: n, role: r, start: startTime }));
+            
+            startTime = new Date(); localStorage.setItem('uwu_session', JSON.stringify({ name: rawName, role: r, start: startTime }));
             nameInput.disabled = true; roleInput.disabled = true; btnStart.disabled = true; btnStop.disabled = false;
             statusMsg.textContent = `Turno de ${r} iniciado. ¡A darlo todo! 🐾`; startTimer();
         };
@@ -649,9 +856,7 @@
             if (marcaje.puesto === "Guardia") {
                 let leaderboard = JSON.parse(localStorage.getItem('uwu_leaderboard')) || {};
                 if(!leaderboard[empName]) leaderboard[empName] = { ms: 0, role: marcaje.puesto };
-                if(typeof leaderboard[empName] === 'number') leaderboard[empName] = { ms: leaderboard[empName], role: marcaje.puesto };
-                leaderboard[empName].ms += diffMs;
-                leaderboard[empName].role = marcaje.puesto; 
+                leaderboard[empName].ms += diffMs; leaderboard[empName].role = marcaje.puesto; 
                 localStorage.setItem('uwu_leaderboard', JSON.stringify(leaderboard));
             } 
             else if (marcaje.puesto === "Mesero") {
@@ -659,26 +864,16 @@
                 const arrayDias = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
                 let diaActual = arrayDias[endTime.getDay()];
                 if(!logMeseros[empName]) logMeseros[empName] = { L: [], M: [], X: [], J: [], V: [], S: [], D: [] };
-                logMeseros[empName][diaActual].push({
-                    inicio: marcaje.inicio, fin: marcaje.fin, totalTxt: marcaje.total, ms: diffMs
-                });
+                logMeseros[empName][diaActual].push({ inicio: marcaje.inicio, fin: marcaje.fin, totalTxt: marcaje.total, ms: diffMs });
                 localStorage.setItem('uwu_meseros', JSON.stringify(logMeseros));
             }
-
             localStorage.removeItem('uwu_session'); localStorage.setItem('uwu_pending', JSON.stringify(marcaje));
             showLog(marcaje); btnStop.disabled = true; statusMsg.textContent = "Envía tu reporte abajo. 👇";
         }
 
         function showLog(data) {
             logSection.style.display = 'block';
-            logContent.innerHTML = `
-                <div class="entry-card">
-                    <div class="entry-info">
-                        <h4>${data.nombre} <span class="role-badge">(${data.puesto})</span></h4>
-                        <p>${data.inicio} - ${data.fin}</p>
-                        <strong style="color:var(--pink-hot)">${data.total} Horas</strong>
-                    </div><button class="btn-send" onclick="sendToGoogle()">Enviar Marcaje 🚀</button>
-                </div>`;
+            logContent.innerHTML = `<div class="entry-card"><div class="entry-info"><h4>${data.nombre} <span class="role-badge">(${data.puesto})</span></h4><p>${data.inicio} - ${data.fin}</p><strong style="color:var(--pink-hot)">${data.total} Horas</strong></div><button class="btn-send" onclick="sendToGoogle()">Enviar Marcaje 🚀</button></div>`;
         }
 
         async function sendToGoogle() {
