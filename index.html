@@ -188,11 +188,13 @@
             width: 1%; white-space: nowrap; padding-left: 15px; padding-right: 15px; 
         }
         
-        /* BLOQUE DE TURNOS HORIZONTAL COMPACTO */
+        /* BLOQUE DE TURNOS - MODIFICADO PARA SALTO DE LÍNEA */
         .shift-block { 
-            display: inline-block; background: var(--white); border: 1px solid var(--pink-soft); 
-            border-radius: 4px; padding: 3px 6px; margin-bottom: 4px; font-size: 11px; 
+            display: block; /* Cambio de inline-block a block para forzar el salto de línea */
+            background: var(--white); border: 1px solid var(--pink-soft); 
+            border-radius: 4px; padding: 3px 6px; margin: 2px auto 4px auto; font-size: 11px; 
             font-weight: 600; color: var(--text-dark); white-space: nowrap; 
+            text-align: center;
         }
         
         .badge-ok { background: #4CAF50; color: white; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
@@ -208,7 +210,6 @@
         .btn-secondary-modal { background: var(--pink-bg); color: var(--text-dark); padding: 10px 20px; border-radius: 10px; border: 2px solid var(--pink-soft); font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-secondary-modal:hover { background: var(--pink-soft); }
         
-        /* Se quitó width: 100% y margin-top para que funcionen bien centrados */
         .btn-danger { background: var(--white); color: #E53935; border: 2px solid #E53935; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-danger:hover { background: #ffebee; }
         
@@ -459,7 +460,6 @@
 
         function verifyAdminPass() {
             let claveIngresada = passInput.value;
-            // "YWRtaW51d3U=" es la palabra "adminuwu" camuflada
             if(btoa(claveIngresada) === "YWRtaW51d3U=") {
                 closeAdminPassModal(); 
                 renderGuardias(); 
@@ -532,7 +532,6 @@
             const tbody = document.getElementById('tabla-meseros');
             tbody.innerHTML = '';
             let logMeseros = JSON.parse(localStorage.getItem('uwu_meseros')) || {};
-
             let dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D']; 
 
             if(Object.keys(logMeseros).length === 0) {
@@ -555,7 +554,6 @@
                     celdasDias += `<td class="col-dia">${shiftHtml || '-'}</td>`;
                 });
 
-                // Meta: 5 horas = 18,000,000 milisegundos
                 let metaCumplida = totalMs >= 18000000;
                 let badgeHtml = metaCumplida ? `<span class="badge-ok">Sí</span>` : `<span class="badge-fail">No</span>`;
 
@@ -572,7 +570,6 @@
 
         function confirmReset() {
             let target = document.getElementById('reset-target').value;
-            
             if(target === 'guardias') {
                 localStorage.removeItem('uwu_leaderboard');
                 renderGuardias();
@@ -583,7 +580,6 @@
             closeResetModal();
         }
 
-        // --- Modales Normales ---
         const uwuModal = document.getElementById('uwu-alert-modal');
         const uwuConfirmModal = document.getElementById('uwu-confirm-modal');
         function showUwuAlert(msj) { document.getElementById('alert-text').textContent = msj; uwuModal.style.display = 'flex'; }
@@ -625,13 +621,10 @@
         btnStart.onclick = () => {
             let rawName = nameInput.value.trim();
             if(!rawName) return showUwuAlert("Ingresa tu nombre por favor. 😸");
-
             const n = rawName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
             nameInput.value = n; 
-            
             const r = roleInput.value;
             if(!r) return showUwuAlert("Selecciona tu puesto de trabajo. 🐾");
-            
             startTime = new Date(); localStorage.setItem('uwu_session', JSON.stringify({ name: n, role: r, start: startTime }));
             nameInput.disabled = true; roleInput.disabled = true; btnStart.disabled = true; btnStop.disabled = false;
             statusMsg.textContent = `Turno de ${r} iniciado. ¡A darlo todo! 🐾`; startTimer();
@@ -643,20 +636,16 @@
             closeUwuConfirm(); clearInterval(interval);
             const endTime = new Date();
             const diffMs = endTime - startTime;
-            
             let sueldoCalculado = "Por ventas";
             if (roleInput.value === "Guardia") sueldoCalculado = "$" + Math.floor((diffMs / 3600000) * 2500000).toLocaleString('es-CL');
-
             const marcaje = {
                 nombre: nameInput.value, puesto: roleInput.value,
                 inicio: startTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
                 fin: endTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
                 total: timerTxt.textContent, sueldo: sueldoCalculado
             };
-
             let empName = marcaje.nombre;
 
-            // LÓGICA GUARDIAS
             if (marcaje.puesto === "Guardia") {
                 let leaderboard = JSON.parse(localStorage.getItem('uwu_leaderboard')) || {};
                 if(!leaderboard[empName]) leaderboard[empName] = { ms: 0, role: marcaje.puesto };
@@ -665,25 +654,14 @@
                 leaderboard[empName].role = marcaje.puesto; 
                 localStorage.setItem('uwu_leaderboard', JSON.stringify(leaderboard));
             } 
-            // LÓGICA MESEROS (Diario)
             else if (marcaje.puesto === "Mesero") {
                 let logMeseros = JSON.parse(localStorage.getItem('uwu_meseros')) || {};
-                
-                // getDay() devuelve: 0(Dom), 1(Lun), 2(Mar), 3(Mie), 4(Jue), 5(Vie), 6(Sab)
                 const arrayDias = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
                 let diaActual = arrayDias[endTime.getDay()];
-
-                if(!logMeseros[empName]) {
-                    logMeseros[empName] = { L: [], M: [], X: [], J: [], V: [], S: [], D: [] };
-                }
-
+                if(!logMeseros[empName]) logMeseros[empName] = { L: [], M: [], X: [], J: [], V: [], S: [], D: [] };
                 logMeseros[empName][diaActual].push({
-                    inicio: marcaje.inicio,
-                    fin: marcaje.fin,
-                    totalTxt: marcaje.total,
-                    ms: diffMs
+                    inicio: marcaje.inicio, fin: marcaje.fin, totalTxt: marcaje.total, ms: diffMs
                 });
-
                 localStorage.setItem('uwu_meseros', JSON.stringify(logMeseros));
             }
 
