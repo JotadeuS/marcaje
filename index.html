@@ -120,7 +120,6 @@
         input:focus, select:focus { border-color: var(--pink-hot); box-shadow: 0 0 15px rgba(255, 105, 180, 0.15); }
         .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); }
         
-        /* Dropdown Autocompletado */
         .suggestions-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%;
             background: #ffe4ee; border: 2px solid var(--pink-hot); border-radius: 15px;
@@ -167,10 +166,8 @@
         .toast { position: fixed; top: 25px; right: 100px; background: #4CAF50; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; z-index: 9999; }
         .toast-error { background: #E53935; }
 
-        /* Estilos Panel Admin General */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; padding: 20px; }
         
-        /* RESTAURADO A 450PX PARA LOS MODALES PEQUEÑOS (Contraseña, Eliminar, etc) */
         .modal-content { background: var(--white); padding: 30px; border-radius: 20px; border: 3px solid var(--pink-soft); text-align: center; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transform: scale(0.7); animation: popIn 0.3s ease forwards; backdrop-filter: blur(15px); }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px dashed var(--pink-soft); padding-bottom: 15px; flex-wrap: wrap;}
@@ -218,14 +215,12 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--pink-soft); border-radius: 10px; }
 
-        /* Estilos Diseño Compacto Admin Personal (CON PARCHE PARA CLIPPING) */
         .staff-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
             gap: 10px;
             max-height: 250px; 
             overflow-y: auto; 
-            /* Se aumenta el padding para que la animación no toque los bordes del recuadro (evita el recorte visual) */
             padding: 15px; 
             margin-top: 5px;
             scroll-behavior: smooth;
@@ -241,7 +236,6 @@
         .btn-delete-mini { background: #ffebee; color: #E53935; border: 1px solid #E53935; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: 0.3s; font-weight: bold;}
         .btn-delete-mini:hover { background: #E53935; color: white; }
         
-        /* Controles Administrador Reducidos */
         .admin-control-input {
             padding: 8px 10px !important;
             font-size: 12px !important;
@@ -255,7 +249,6 @@
             left: 10px !important;
         }
 
-        /* ANIMACIÓN DESTACAR NUEVO TRABAJADOR (Ajustada para que no rompa el contenedor) */
         @keyframes highlightNew {
             0% { transform: scale(0.9); opacity: 0; background: var(--pink-hot); color: white; border-color: var(--pink-hot); }
             40% { transform: scale(1.02); opacity: 1; background: var(--pink-hot); color: white; box-shadow: 0 0 10px rgba(255, 105, 180, 0.4); border-color: var(--pink-hot); }
@@ -458,7 +451,7 @@
 
         <div class="input-box">
             <span class="input-icon">👤</span>
-            <input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off">
+            <input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off" disabled>
             <ul id="suggestions-list" class="suggestions-dropdown"></ul>
         </div>
         
@@ -471,10 +464,10 @@
         </div>
 
         <div class="timer-big" id="digital-timer">00:00:00</div>
-        <p id="status-msg" style="margin-bottom: 20px; font-weight: 600; font-size: 13px;">Listo para empezar miau~</p>
+        <p id="status-msg" style="margin-bottom: 20px; font-weight: 600; font-size: 13px;">Cargando lista de personal... ⏳</p>
 
         <div class="btn-group">
-            <button id="btn-start" class="btn-in">🐾 Iniciar Turno</button>
+            <button id="btn-start" class="btn-in" disabled>🐾 Iniciar Turno</button>
             <button id="btn-stop" class="btn-out" disabled>🛑 Terminar Turno</button>
         </div>
 
@@ -507,6 +500,7 @@
             }
         });
 
+        // TU ENLACE DE GOOGLE SCRIPT ACTUAL
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXBxhjDo1HLNHZ9Xbqipeb5T-JUMl3PqthjsNWs1RON-4_g7pleNXCarhS1H-O_bA/exec"; 
 
         const timerTxt = document.getElementById('digital-timer');
@@ -520,19 +514,47 @@
         
         let startTime = null; let interval = null;
 
-        // --- INICIALIZACIÓN DE LA BASE DE DATOS LOCAL DE PERSONAL ---
-        const defaultNames = [
-            "Mario Antonio", "Maldi Tosnigga", "Diego Zambra", "Vod Kode", 
-            "Nano Azar", "Tony Angellini", "Vains Contreras", "Mateo Contreras", 
-            "Nataniel DoSantos", "Nestor", "Willy Falcone"
-        ]; 
-        
-        let validNames = JSON.parse(localStorage.getItem('uwu_personnel'));
-        if (!validNames) {
-            validNames = defaultNames;
-            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+        // --- NUEVA LÓGICA DE BASE DE DATOS EN LA NUBE (GOOGLE SCRIPT) ---
+        let validNames = [];
+
+        async function loadStaffFromCloud() {
+            try {
+                // Buscamos la lista oficial en tu Google Script
+                const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStaff");
+                const data = await response.json();
+                if(data && data.staff) {
+                    validNames = data.staff;
+                    localStorage.setItem('uwu_personnel', JSON.stringify(validNames)); // Guardamos copia local
+                }
+            } catch (error) {
+                console.error("Usando copia local (falló carga nube):", error);
+                // Si falla (ej: sin internet), usamos la copia guardada
+                validNames = JSON.parse(localStorage.getItem('uwu_personnel')) || [
+                    "Mario Antonio", "Maldi Tosnigga", "Diego Zambra", "Vod Kode", 
+                    "Nano Azar", "Tony Angellini", "Vains Contreras", "Mateo Contreras", 
+                    "Nataniel DoSantos", "Nestor", "Willy Falcone"
+                ];
+            }
+            // Habilitamos el panel una vez cargado
+            nameInput.disabled = false;
+            btnStart.disabled = false;
+            statusMsg.textContent = "Listo para empezar miau~";
         }
-        
+
+        async function syncStaffToCloud() {
+            try {
+                // Enviamos la lista actualizada al Google Script
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "syncStaff", staff: validNames })
+                });
+            } catch (error) {
+                console.error("Error sincronizando:", error);
+            }
+        }
+
         const suggestionsList = document.getElementById('suggestions-list');
 
         // --- Autocompletado Dinámico (Panel Principal) ---
@@ -549,7 +571,6 @@
                         li.textContent = `✨ ${match}`;
                         li.onclick = function() {
                             nameInput.value = match;
-                            nameInput.disabled = true; 
                             suggestionsList.style.display = 'none';
                         };
                         suggestionsList.appendChild(li);
@@ -634,9 +655,6 @@
             }
         }
 
-        // ==========================================
-        // FUNCIONES DE GESTIÓN DE PERSONAL (CON ANIMACIÓN)
-        // ==========================================
         function renderStaffAdmin(highlightName = null) {
             const list = document.getElementById('staff-list-admin');
             const counter = document.getElementById('staff-count');
@@ -681,12 +699,13 @@
 
             validNames.push(formattedName);
             localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+            syncStaffToCloud(); // <-- Sincroniza al agregar
+
             input.value = '';
-            
             document.getElementById('admin-search-staff').value = '';
             
             renderStaffAdmin(formattedName);
-            showToast('toast', '✅ ¡Trabajador añadido!');
+            showToast('toast', '✅ ¡Trabajador añadido globalmente!');
 
             setTimeout(() => {
                 const newElement = document.querySelector('.highlight-new-staff');
@@ -708,11 +727,12 @@
             const nameToDelete = document.getElementById('delete-staff-target').value;
             validNames = validNames.filter(n => n !== nameToDelete);
             localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
+            syncStaffToCloud(); // <-- Sincroniza al despedir
+
             renderStaffAdmin();
             closeDeleteStaffModal();
-            showToast('toast', '✅ ¡Personal eliminado!');
+            showToast('toast', '✅ ¡Personal eliminado globalmente!');
         }
-        // ==========================================
 
         function formatMsToTime(ms) {
             let totalS = Math.floor(ms / 1000);
@@ -788,9 +808,6 @@
         function showUwuConfirm() { uwuConfirmModal.style.display = 'flex'; }
         function closeUwuConfirm() { uwuConfirmModal.style.display = 'none'; }
 
-        // ==========================================
-        // RELOJ ANALÓGICO
-        // ==========================================
         const clock = document.getElementById('analog-clock');
         const hHour = document.getElementById('h-hour'); const hMin = document.getElementById('h-min'); const hSec = document.getElementById('h-sec');
         for(let i=1; i<=12; i++) {
@@ -819,9 +836,6 @@
 
         function startTimer() { interval = setInterval(() => { timerTxt.textContent = formatMsToTime(new Date() - startTime); }, 1000); }
 
-        // ==========================================
-        // LÓGICA DE TURNOS Y ENVÍO
-        // ==========================================
         btnStart.onclick = () => {
             let rawName = nameInput.value.trim();
             if(!rawName) return showUwuAlert("Ingresa tu nombre por favor. 😸");
@@ -887,7 +901,10 @@
             } catch (e) { alert("Error al enviar."); btn.disabled = false; btn.textContent = "Enviar Marcaje 🚀"; }
         }
 
-        window.onload = checkPersistence;
+        window.onload = async () => {
+            await loadStaffFromCloud(); // Esperamos a que baje la lista de internet primero
+            checkPersistence();
+        };
     </script>
 </body>
 </html>
