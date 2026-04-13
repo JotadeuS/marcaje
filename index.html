@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UwU Café - Sistema de Marcaje 🐾</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         /* Variables Globales (Modo Claro) */
         :root {
@@ -118,8 +122,9 @@
         .select-arrow { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--pink-hot); font-size: 12px; }
         input::placeholder { color: var(--text-muted); font-weight: 400; }
         input:focus, select:focus { border-color: var(--pink-hot); box-shadow: 0 0 15px rgba(255, 105, 180, 0.15); }
-        .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); }
+        .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); z-index: 2; }
         
+        /* Dropdown Autocompletado */
         .suggestions-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%;
             background: #ffe4ee; border: 2px solid var(--pink-hot); border-radius: 15px;
@@ -166,6 +171,7 @@
         .toast { position: fixed; top: 25px; right: 100px; background: #4CAF50; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; z-index: 9999; }
         .toast-error { background: #E53935; }
 
+        /* Estilos Panel Admin General */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; padding: 20px; }
         
         .modal-content { background: var(--white); padding: 30px; border-radius: 20px; border: 3px solid var(--pink-soft); text-align: center; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transform: scale(0.7); animation: popIn 0.3s ease forwards; backdrop-filter: blur(15px); }
@@ -215,6 +221,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--pink-soft); border-radius: 10px; }
 
+        /* Estilos Diseño Compacto Admin Personal */
         .staff-grid {
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
@@ -451,7 +458,7 @@
 
         <div class="input-box">
             <span class="input-icon">👤</span>
-            <input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off" disabled>
+            <input type="text" id="user-name" placeholder="Escribe tu Nombre..." autocomplete="off">
             <ul id="suggestions-list" class="suggestions-dropdown"></ul>
         </div>
         
@@ -464,10 +471,10 @@
         </div>
 
         <div class="timer-big" id="digital-timer">00:00:00</div>
-        <p id="status-msg" style="margin-bottom: 20px; font-weight: 600; font-size: 13px;">Cargando lista de personal... ⏳</p>
+        <p id="status-msg" style="margin-bottom: 20px; font-weight: 600; font-size: 13px;">Listo para empezar miau~</p>
 
         <div class="btn-group">
-            <button id="btn-start" class="btn-in" disabled>🐾 Iniciar Turno</button>
+            <button id="btn-start" class="btn-in">🐾 Iniciar Turno</button>
             <button id="btn-stop" class="btn-out" disabled>🛑 Terminar Turno</button>
         </div>
 
@@ -500,8 +507,23 @@
             }
         });
 
-        // TU ENLACE DE GOOGLE SCRIPT ACTUAL
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbws-SJr9x5mYbQwNTRNiOquWY2SDUXqoa_cx4i_79T0LctsxdDgbvdG_NxJTTpYZm8L/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXBxhjDo1HLNHZ9Xbqipeb5T-JUMl3PqthjsNWs1RON-4_g7pleNXCarhS1H-O_bA/exec"; 
+
+        // ==========================================
+        // 🔴 INICIALIZACIÓN DE FIREBASE 🔴
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEktkgOU-AOMA0Zz1lFObM8lP903WdkYg", // <-- ¡REEMPLAZA ESTA LÍNEA CON TU API KEY REAL!
+            authDomain: "uwu-cafe-86b2a.firebaseapp.com",
+            databaseURL: "https://uwu-cafe-86b2a-default-rtdb.firebaseio.com",
+            projectId: "uwu-cafe-86b2a",
+            storageBucket: "uwu-cafe-86b2a.appspot.com",
+            messagingSenderId: "1027218596160",
+            appId: "1:1027218596160:web:242c18f16ff1f5fe10daa5"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         const timerTxt = document.getElementById('digital-timer');
         const nameInput = document.getElementById('user-name');
@@ -511,53 +533,64 @@
         const logSection = document.getElementById('log-section');
         const logContent = document.getElementById('log-content');
         const statusMsg = document.getElementById('status-msg');
-        
+
         let startTime = null; let interval = null;
 
-        // --- NUEVA LÓGICA DE BASE DE DATOS EN LA NUBE (GOOGLE SCRIPT) ---
+        // --- BASE DE DATOS EN TIEMPO REAL (PERSONAL) ---
+        const defaultNames = ["Mario Antonio", "Maldi Tosnigga", "Diego Zambra", "Vod Kode", "Nano Azar", "Tony Angellini", "Vains Contreras", "Mateo Contreras", "Nataniel DoSantos", "Nestor", "Willy Falcone"]; 
         let validNames = [];
-
-        async function loadStaffFromCloud() {
-            try {
-                // Buscamos la lista oficial en tu Google Script
-                const response = await fetch(GOOGLE_SCRIPT_URL + "?action=getStaff");
-                const data = await response.json();
-                if(data && data.staff) {
-                    validNames = data.staff;
-                    localStorage.setItem('uwu_personnel', JSON.stringify(validNames)); // Guardamos copia local
-                }
-            } catch (error) {
-                console.error("Usando copia local (falló carga nube):", error);
-                // Si falla (ej: sin internet), usamos la copia guardada
-                validNames = JSON.parse(localStorage.getItem('uwu_personnel')) || [
-                    "Mario Antonio", "Maldi Tosnigga", "Diego Zambra", "Vod Kode", 
-                    "Nano Azar", "Tony Angellini", "Vains Contreras", "Mateo Contreras", 
-                    "Nataniel DoSantos", "Nestor", "Willy Falcone"
-                ];
-            }
-            // Habilitamos el panel una vez cargado
-            nameInput.disabled = false;
-            btnStart.disabled = false;
-            statusMsg.textContent = "Listo para empezar miau~";
-        }
-
-        async function syncStaffToCloud() {
-            try {
-                // Enviamos la lista actualizada al Google Script
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "syncStaff", staff: validNames })
-                });
-            } catch (error) {
-                console.error("Error sincronizando:", error);
-            }
-        }
+        let previousNames = []; // Variable para detectar al nuevo trabajador animado
+        let localLeaderboard = {};
+        let localMeseros = {};
 
         const suggestionsList = document.getElementById('suggestions-list');
 
-        // --- Autocompletado Dinámico (Panel Principal) ---
+        // 📡 Escuchar cambios en vivo desde Firebase (CON ANIMACIÓN DE AGREGADO)
+        db.ref('uwu_personnel').on('value', (snapshot) => {
+            let newNames = [];
+            if (snapshot.exists()) {
+                newNames = snapshot.val();
+            } else {
+                newNames = defaultNames;
+                db.ref('uwu_personnel').set(newNames);
+            }
+
+            // Buscar si hay un nombre nuevo comparando con la lista anterior
+            let addedName = null;
+            if (previousNames.length > 0 && newNames.length > previousNames.length) {
+                addedName = newNames.find(n => !previousNames.includes(n));
+            }
+            
+            validNames = newNames;
+            previousNames = [...validNames]; // Actualizar la lista vieja
+
+            // Actualizar el panel admin si está abierto y aplicar animación
+            if (document.getElementById('uwu-leaderboard-modal').style.display === 'flex') {
+                renderStaffAdmin(addedName);
+                
+                // Hacer scroll suave hacia el trabajador nuevo para que se note la animación
+                if (addedName) {
+                    setTimeout(() => {
+                        const newElement = document.querySelector('.highlight-new-staff');
+                        if (newElement) {
+                            newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
+                }
+            }
+        });
+
+        db.ref('uwu_leaderboard').on('value', (snapshot) => {
+            localLeaderboard = snapshot.val() || {};
+            if (document.getElementById('uwu-leaderboard-modal').style.display === 'flex') renderGuardias();
+        });
+
+        db.ref('uwu_meseros').on('value', (snapshot) => {
+            localMeseros = snapshot.val() || {};
+            if (document.getElementById('uwu-leaderboard-modal').style.display === 'flex') renderMeseros();
+        });
+
+        // --- Autocompletado Dinámico ---
         nameInput.addEventListener('input', function() {
             const val = this.value.toLowerCase();
             suggestionsList.innerHTML = ''; 
@@ -571,6 +604,7 @@
                         li.textContent = `${match}`;
                         li.onclick = function() {
                             nameInput.value = match;
+                            nameInput.disabled = true; 
                             suggestionsList.style.display = 'none';
                         };
                         suggestionsList.appendChild(li);
@@ -583,7 +617,6 @@
             }
         });
 
-        // --- VALIDACIÓN DE SEGURIDAD (BLUR) ---
         nameInput.addEventListener('blur', function() {
             setTimeout(() => {
                 if (this.value.trim() !== '' && !this.disabled) {
@@ -611,14 +644,14 @@
         const leaderModal = document.getElementById('uwu-leaderboard-modal');
         const resetModal = document.getElementById('uwu-reset-modal');
         const passInput = document.getElementById('admin-pass-input');
-        
+
         btnAdmin.onclick = () => { passModal.style.display = 'flex'; passInput.value = ''; passInput.focus(); };
         function closeAdminPassModal() { passModal.style.display = 'none'; }
         function closeLeaderboardModal() { leaderModal.style.display = 'none'; }
-        
+
         function showResetModal(target) { document.getElementById('reset-target').value = target; resetModal.style.display = 'flex'; }
         function closeResetModal() { resetModal.style.display = 'none'; }
-        
+
         function showToast(id, msg = null) { 
             const t = document.getElementById(id); 
             if(msg) t.innerHTML = msg;
@@ -655,6 +688,9 @@
             }
         }
 
+        // ==========================================
+        // FUNCIONES DE GESTIÓN DE PERSONAL EN VIVO
+        // ==========================================
         function renderStaffAdmin(highlightName = null) {
             const list = document.getElementById('staff-list-admin');
             const counter = document.getElementById('staff-count');
@@ -674,9 +710,7 @@
                 let div = document.createElement('div');
                 div.className = 'staff-card-mini';
                 
-                if (name === highlightName) {
-                    div.classList.add('highlight-new-staff');
-                }
+                if (name === highlightName) div.classList.add('highlight-new-staff');
 
                 div.innerHTML = `
                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 5px;" title="${name}">${name}</span> 
@@ -698,21 +732,11 @@
             }
 
             validNames.push(formattedName);
-            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
-            syncStaffToCloud(); // <-- Sincroniza al agregar
-
+            db.ref('uwu_personnel').set(validNames); // 📡 Sube a Firebase
             input.value = '';
-            document.getElementById('admin-search-staff').value = '';
             
-            renderStaffAdmin(formattedName);
-            showToast('toast', '✅ ¡Trabajador añadido globalmente!');
-
-            setTimeout(() => {
-                const newElement = document.querySelector('.highlight-new-staff');
-                if (newElement) {
-                    newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
+            document.getElementById('admin-search-staff').value = '';
+            showToast('toast', '✅ ¡Trabajador añadido!');
         }
 
         const deleteStaffModal = document.getElementById('uwu-delete-staff-modal');
@@ -722,17 +746,16 @@
             deleteStaffModal.style.display = 'flex';
         }
         function closeDeleteStaffModal() { deleteStaffModal.style.display = 'none'; }
-        
+
         function confirmDeleteStaff() {
             const nameToDelete = document.getElementById('delete-staff-target').value;
             validNames = validNames.filter(n => n !== nameToDelete);
-            localStorage.setItem('uwu_personnel', JSON.stringify(validNames));
-            syncStaffToCloud(); // <-- Sincroniza al despedir
-
-            renderStaffAdmin();
+            db.ref('uwu_personnel').set(validNames); // 📡 Borra en Firebase
             closeDeleteStaffModal();
-            showToast('toast', '✅ ¡Personal eliminado globalmente!');
+            showToast('toast', '✅ ¡Personal eliminado!');
         }
+
+        // ==========================================
 
         function formatMsToTime(ms) {
             let totalS = Math.floor(ms / 1000);
@@ -744,10 +767,11 @@
             const listGuardias = document.getElementById('leaderboard-guardias');
             const tbodyNomina = document.getElementById('nomina-guardias');
             listGuardias.innerHTML = ''; tbodyNomina.innerHTML = '';
-            let leaderboard = JSON.parse(localStorage.getItem('uwu_leaderboard')) || {};
-            let arr = Object.keys(leaderboard).map(name => ({ nombre: name, ms: leaderboard[name].ms !== undefined ? leaderboard[name].ms : leaderboard[name], role: leaderboard[name].role || "Mesero" }));
+            
+            let arr = Object.keys(localLeaderboard).map(name => ({ nombre: name, ms: localLeaderboard[name].ms !== undefined ? localLeaderboard[name].ms : localLeaderboard[name], role: localLeaderboard[name].role || "Mesero" }));
             let guardiasArr = arr.filter(e => e.role === "Guardia").sort((a, b) => b.ms - a.ms);
             let top3Guardias = guardiasArr.slice(0, 3); 
+            
             if(guardiasArr.length === 0) {
                 listGuardias.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px; margin: 10px 0;">No hay guardias registrados 🐾</p>';
                 tbodyNomina.innerHTML = '<tr><td colspan="3" style="text-align:center; padding-top: 10px; color:var(--text-muted);">Sin registros</td></tr>';
@@ -770,14 +794,13 @@
         function renderMeseros() {
             const tbody = document.getElementById('tabla-meseros');
             tbody.innerHTML = '';
-            let logMeseros = JSON.parse(localStorage.getItem('uwu_meseros')) || {};
             let dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D']; 
-            if(Object.keys(logMeseros).length === 0) {
+            if(Object.keys(localMeseros).length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding-top: 20px; color:var(--text-muted);">No hay meseros registrados esta semana 🐾</td></tr>';
                 return;
             }
-            for (let name in logMeseros) {
-                let emp = logMeseros[name];
+            for (let name in localMeseros) {
+                let emp = localMeseros[name];
                 let totalMs = 0; let celdasDias = '';
                 dias.forEach(d => {
                     let shifts = emp[d] || [];
@@ -795,10 +818,10 @@
 
         function confirmReset() {
             let target = document.getElementById('reset-target').value;
-            if(target === 'guardias') { localStorage.removeItem('uwu_leaderboard'); renderGuardias(); }
-            else if (target === 'meseros') { localStorage.removeItem('uwu_meseros'); renderMeseros(); }
+            if(target === 'guardias') { db.ref('uwu_leaderboard').remove(); }
+            else if (target === 'meseros') { db.ref('uwu_meseros').remove(); }
             closeResetModal();
-            showToast('toast', '✅ ¡Datos borrados!');
+            showToast('toast', '✅ ¡Datos borrados en la nube!');
         }
 
         const uwuModal = document.getElementById('uwu-alert-modal');
@@ -808,6 +831,9 @@
         function showUwuConfirm() { uwuConfirmModal.style.display = 'flex'; }
         function closeUwuConfirm() { uwuConfirmModal.style.display = 'none'; }
 
+        // ==========================================
+        // RELOJ ANALÓGICO
+        // ==========================================
         const clock = document.getElementById('analog-clock');
         const hHour = document.getElementById('h-hour'); const hMin = document.getElementById('h-min'); const hSec = document.getElementById('h-sec');
         for(let i=1; i<=12; i++) {
@@ -821,6 +847,7 @@
         }, 1000);
 
         function checkPersistence() {
+            // La sesión actual se mantiene en local para no saturar la base de datos con temporizadores vivos.
             const savedSession = localStorage.getItem('uwu_session');
             if(savedSession) {
                 const session = JSON.parse(savedSession);
@@ -836,6 +863,9 @@
 
         function startTimer() { interval = setInterval(() => { timerTxt.textContent = formatMsToTime(new Date() - startTime); }, 1000); }
 
+        // ==========================================
+        // LÓGICA DE TURNOS Y ENVÍO A FIREBASE
+        // ==========================================
         btnStart.onclick = () => {
             let rawName = nameInput.value.trim();
             if(!rawName) return showUwuAlert("Ingresa tu nombre por favor. 😸");
@@ -867,20 +897,25 @@
             };
             let empName = marcaje.nombre;
 
+            // 📡 Guarda el registro finalizado directo en Firebase
             if (marcaje.puesto === "Guardia") {
-                let leaderboard = JSON.parse(localStorage.getItem('uwu_leaderboard')) || {};
-                if(!leaderboard[empName]) leaderboard[empName] = { ms: 0, role: marcaje.puesto };
-                leaderboard[empName].ms += diffMs; leaderboard[empName].role = marcaje.puesto; 
-                localStorage.setItem('uwu_leaderboard', JSON.stringify(leaderboard));
+                db.ref('uwu_leaderboard/' + empName).once('value').then(snap => {
+                    let data = snap.val() || { ms: 0, role: marcaje.puesto };
+                    data.ms += diffMs; data.role = marcaje.puesto;
+                    db.ref('uwu_leaderboard/' + empName).set(data);
+                });
             } 
             else if (marcaje.puesto === "Mesero") {
-                let logMeseros = JSON.parse(localStorage.getItem('uwu_meseros')) || {};
-                const arrayDias = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
-                let diaActual = arrayDias[endTime.getDay()];
-                if(!logMeseros[empName]) logMeseros[empName] = { L: [], M: [], X: [], J: [], V: [], S: [], D: [] };
-                logMeseros[empName][diaActual].push({ inicio: marcaje.inicio, fin: marcaje.fin, totalTxt: marcaje.total, ms: diffMs });
-                localStorage.setItem('uwu_meseros', JSON.stringify(logMeseros));
+                db.ref('uwu_meseros/' + empName).once('value').then(snap => {
+                    let logMeseros = snap.val() || { L: [], M: [], X: [], J: [], V: [], S: [], D: [] };
+                    const arrayDias = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+                    let diaActual = arrayDias[endTime.getDay()];
+                    if(!logMeseros[diaActual]) logMeseros[diaActual] = [];
+                    logMeseros[diaActual].push({ inicio: marcaje.inicio, fin: marcaje.fin, totalTxt: marcaje.total, ms: diffMs });
+                    db.ref('uwu_meseros/' + empName).set(logMeseros);
+                });
             }
+
             localStorage.removeItem('uwu_session'); localStorage.setItem('uwu_pending', JSON.stringify(marcaje));
             showLog(marcaje); btnStop.disabled = true; statusMsg.textContent = "Envía tu reporte abajo. 👇";
         }
@@ -901,10 +936,7 @@
             } catch (e) { alert("Error al enviar."); btn.disabled = false; btn.textContent = "Enviar Marcaje 🚀"; }
         }
 
-        window.onload = async () => {
-            await loadStaffFromCloud(); // Esperamos a que baje la lista de internet primero
-            checkPersistence();
-        };
+        window.onload = checkPersistence;
     </script>
 </body>
 </html>
